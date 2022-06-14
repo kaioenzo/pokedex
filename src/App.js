@@ -1,19 +1,25 @@
 import './App.css';
 import api from './services/api';
 import { useState, useEffect } from 'react';
+import PokemonType from './components/PokemonType';
+import PokemonBasicInfo from './components/PokemonBasicInfo'
+import PokemonWeaknessStrength from './components/PokemonWeakness';
 
 function App() {
   const [pokemon, setPokemon] = useState(undefined)
   const [pokemonWeakness, setPokemonWeakness] = useState(undefined)
   const [pokemonName, setPokemonName] = useState('')
   const [pokemonSearch,setPokemonSearch] = useState(undefined)
+  const pokemonTypes = []
+
+
   useEffect(() => {
     if(pokemonSearch!==undefined){
       api
       .get(`pokemon/${pokemonSearch}`)
       .then((response) => setPokemon(response.data))
       .catch((err) => {
-        console.error("ops! ocorreu um erro" + err);
+        console.error("ops! ocorreu um erro: " + err);
       })
     }
   }, [pokemonSearch])
@@ -28,46 +34,59 @@ function App() {
       })
     }
   }, [pokemon])
-  const handleSubmit = () => setPokemonSearch(pokemonName)
-  // console.log(pokemonWeakness?.damage_relations.double_damage_from[0].name)
 
-  console.log(pokemonSearch)
+
+
+  const handleChangeInput = (e) => {
+    const pokemonInput = e.target.value
+    const pokemonStringLowerCase = pokemonInput.toLowerCase()
+    setPokemonName(pokemonStringLowerCase);
+  };
+  const handleSubmit = () =>{
+    if(pokemonName.trim().length !== 0){
+      setPokemonSearch(pokemonName)
+    }
+    }
+
+
+  if (pokemon!==undefined) {
+
+      for (let i = 0; i < pokemon.types.length; i++) {
+       pokemonTypes.push(pokemon.types[i].type.name)
+
+      }
+}
+if (pokemon===undefined) {
+  return(
+        <div className='App'>
+           <input
+      type="text"
+      name='search'
+      id='search'
+      onChange={handleChangeInput}
+      placeholder='Blastoise'
+      required
+      />
+      <button onClick={handleSubmit}>Buscar</button>
+        </div>
+  )
+}
   return (
     <div className="App">
       <input
       type="text"
       name='search'
       id='search'
-      onChange={(e) => setPokemonName(e.target.value)}
+      onChange={handleChangeInput}
+      placeholder='Blastoise'
+      required
       />
       <button onClick={handleSubmit}>Buscar</button>
 
 
-
-
-
-    <h1>{pokemon?.name} #{pokemon?.id}</h1>
-    <img src={pokemon?.sprites.front_default}></img>
-    <h2>Tipos</h2>
-    <ul>
-      <li>{pokemon?.types[0].type.name}</li>
-      <li>{pokemon?.types[1]?.type.name}</li>
-    </ul>
-    <h2>Peso: {pokemon?.weight/10}kg</h2>
-    <h2>Altura: {pokemon?.height/10}m</h2>
-    <h3>Fraquezas</h3>
-    <ul>
-    <li>{pokemonWeakness?.damage_relations.double_damage_from[0].name}</li>
-    <li>{pokemonWeakness?.damage_relations.double_damage_from[1].name}</li>
-    </ul>
-    <h3>Forte contra:</h3>
-    <ul>
-      <li>{pokemonWeakness?.damage_relations.double_damage_to[0].name}</li>
-      <li>{pokemonWeakness?.damage_relations.double_damage_to[1].name}</li>
-      <li>{pokemonWeakness?.damage_relations.double_damage_to[2].name}</li>
-
-    </ul>
-
+    <PokemonBasicInfo pokemonData={pokemon}/>
+    <PokemonType type={pokemonTypes}/>
+    <PokemonWeaknessStrength pokemonData={pokemon}/>
 
     </div>
   );
