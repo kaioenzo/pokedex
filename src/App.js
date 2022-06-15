@@ -4,12 +4,12 @@ import { useState, useEffect } from 'react';
 import PokemonType from './components/PokemonType';
 import PokemonBasicInfo from './components/PokemonBasicInfo'
 import PokemonWeaknessStrength from './components/PokemonWeakness';
+import AllPokemon from './components/AllPokemon';
 
 function App() {
   const [pokemon, setPokemon] = useState(undefined)
-  const [pokemonWeakness, setPokemonWeakness] = useState(undefined)
   const [pokemonName, setPokemonName] = useState('')
-  const [pokemonSearch,setPokemonSearch] = useState(undefined)
+  const [pokemonSearch,setPokemonSearch] = useState(null)
   const pokemonTypes = []
 
 
@@ -24,16 +24,7 @@ function App() {
     }
   }, [pokemonSearch])
 
-  useEffect(() => {
-    if (pokemon!==undefined) {
-      api
-      .get(`type/${pokemon.types[0].type.name}`)
-      .then((response) => setPokemonWeakness(response.data))
-      .catch((err) => {
-        console.error("ops! ocorreu um erro" + err);
-      })
-    }
-  }, [pokemon])
+
 
 
 
@@ -48,7 +39,6 @@ function App() {
     }
     }
 
-
   if (pokemon!==undefined) {
 
       for (let i = 0; i < pokemon.types.length; i++) {
@@ -59,29 +49,31 @@ function App() {
 if (pokemon===undefined) {
   return(
         <div className='App'>
-           <input
-      type="text"
-      name='search'
-      id='search'
-      onChange={handleChangeInput}
-      placeholder='Blastoise'
-      required
-      />
-      <button onClick={handleSubmit}>Buscar</button>
+        <input
+        type="text"
+        name='search'
+        id='search'
+        onChange={handleChangeInput}
+        placeholder='Blastoise'
+        required
+        />
+        <button onClick={handleSubmit}>Buscar</button>
+      <AllPokemon/>
         </div>
   )
 }
   return (
     <div className="App">
-      <input
-      type="text"
-      name='search'
-      id='search'
-      onChange={handleChangeInput}
-      placeholder='Blastoise'
-      required
-      />
-      <button onClick={handleSubmit}>Buscar</button>
+    <input
+    type="text"
+    name='search'
+    id='search'
+    onChange={handleChangeInput}
+    placeholder='Blastoise'
+    required
+/>
+    <button onClick={handleSubmit}>Buscar</button>
+
 
 
     <PokemonBasicInfo pokemonData={pokemon}/>
