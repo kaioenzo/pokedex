@@ -13,6 +13,5 @@ function PokemonType({type}){
         </div>
     )
 
-return
 }
 export default PokemonType

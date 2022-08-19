@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import types_data from "./types_data";
 
 
@@ -41,20 +42,17 @@ Object.keys(weaknesses).forEach((item,value) => {
 
 //set weakness,resistance and immunity
         Object.keys(weaknesses).forEach((item) => {
-            if(weaknesses[item]===2){
-                weakTo.push(item)
+            switch (weaknesses[item]) {
+                case 2:
+                    weakTo.push(item)
+                case 0:
+                    immuneTo.push(item)
+                case 0.5:
+                    resistantTo.push(item)
             }
+
         })
-        Object.keys(weaknesses).forEach((item) => {
-            if(weaknesses[item]===0){
-                immuneTo.push(item)
-            }
-        })
-        Object.keys(weaknesses).forEach((item) => {
-            if(weaknesses[item]===0.5){
-                resistantTo.push(item)
-            }
-        })
+
 
 
 //loop for component exibitions

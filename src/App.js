@@ -8,44 +8,41 @@ import AllPokemon from './components/AllPokemon';
 
 function App() {
   const [pokemon, setPokemon] = useState(undefined)
-  const [pokemonName, setPokemonName] = useState('')
-  const [pokemonSearch,setPokemonSearch] = useState(null)
+  const [pokemonName, setPokemonName] = useState(undefined)
   const pokemonTypes = []
 
-
   useEffect(() => {
-    if(pokemonSearch!==undefined){
+    if(pokemonName!==undefined){
       api
-      .get(`pokemon/${pokemonSearch}`)
+      .get(`pokemon/${pokemonName}`)
       .then((response) => setPokemon(response.data))
       .catch((err) => {
         console.error("ops! ocorreu um erro: " + err);
       })
     }
-  }, [pokemonSearch])
-
-
-
+  }, [pokemonName])
 
 
   const handleChangeInput = (e) => {
     const pokemonInput = e.target.value
     const pokemonStringLowerCase = pokemonInput.toLowerCase()
-    setPokemonName(pokemonStringLowerCase);
-  };
-  const handleSubmit = () =>{
-    if(pokemonName.trim().length !== 0){
-      setPokemonSearch(pokemonName)
+
+    if(pokemonStringLowerCase.trim().length > 3){
+      setPokemonName(pokemonStringLowerCase);
     }
+    else{
+      setPokemonName(undefined)
+      setPokemon(undefined)
     }
+  }
 
   if (pokemon!==undefined) {
-
       for (let i = 0; i < pokemon.types.length; i++) {
        pokemonTypes.push(pokemon.types[i].type.name)
 
       }
 }
+
 if (pokemon===undefined) {
   return(
         <div className='App'>
@@ -57,7 +54,6 @@ if (pokemon===undefined) {
         placeholder='Blastoise'
         required
         />
-        <button onClick={handleSubmit}>Buscar</button>
       <AllPokemon/>
         </div>
   )
@@ -72,9 +68,6 @@ if (pokemon===undefined) {
     placeholder='Blastoise'
     required
 />
-    <button onClick={handleSubmit}>Buscar</button>
-
-
 
     <PokemonBasicInfo pokemonData={pokemon}/>
     <PokemonType type={pokemonTypes}/>
