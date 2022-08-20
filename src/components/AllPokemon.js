@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
+import Types from '../assets/index'
 import api from "../services/api";
+import TypeIcon from "./TypeIcon";
+
 class PokemonObject {
   constructor(objeto){
     this.name = objeto.name
@@ -7,7 +10,7 @@ class PokemonObject {
     if (objeto.types.length > 1) {
       this.type2 = objeto.types[1].type.name
     }
-    this.sprite = objeto.sprites.other.dream_world.front_default
+    this.sprite = objeto.sprites.other['official-artwork'].front_default
     this.number = objeto.id
   }
 }
@@ -18,6 +21,7 @@ function AllPokemon(){
   let result = []
   const [display,setDisplay] = useState([])
   const [limitList,setLimitList] = useState(20);
+  const [offset,setOffset] = useState(0);
 
   useEffect(() => {
     Pokemons_array()
@@ -40,41 +44,56 @@ function AllPokemon(){
   }
   async function GetList(){
     const POKEMONS = await (
-      await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limitList}`)
+      await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limitList}&offset=${offset}`)
     ).json();
     return POKEMONS.results;
 
   }
   async function ReturnResult(){
     for (let i = 0; i < limitList; i++) {
-      let ResultINScreen =  new PokemonObject(data[i])
-      result.push(ResultINScreen)
+      const POKEMON_OBJECT =  new PokemonObject(data[i])
+      result.push(POKEMON_OBJECT)
     }
     result.sort(function(a,b) {
       return a.number - b.number;
   })
-    console.log(result)
     setDisplay(result)
   }
+
   function ShowMore(){
-    setLimitList(prevCount => prevCount + 30)
+    setLimitList(prevCount => prevCount + 20)
   }
 
-    return(
-        <div>   
-          {display.map((item,index) =>(
-          <>
-          <img src={item.sprite} alt='pokemon name'></img>
-          <h3>{item.name} #{item.number - 1}</h3>
-          <ul>
-            <li key={index}>{item.type1}</li>
-            <li key={index+1}>{item.type2 ? item.type2 : ''}</li>
-          </ul>
+  function Gen2(){
+    setOffset(151)
+    setLimitList(100)
+  }
 
-          </>
-        ))}
+    for (let i = 0; i < display.length; i++) {
+      display[i].type1 = TypeIcon(display[i].type1)
+      if (display[i].type2) {
+        display[i].type2 = TypeIcon(display[i].type2)
+      }
+    }
+
+    return(
+      <>
+        <button onClick={Gen2}>GEN II</button>
+        <br></br>
+          {display.map((item,index) =>(
+          <div>
+              <img src={item.sprite} alt='pokemon name'></img>
+              <h3>{item.name} #{item.number}</h3>
+
+                  {item.type1}
+                  {item.type2}
+
+          </div>
+                      ))
+          }
         <button onClick={ShowMore}>Mostrar mais</button>
-        </div>
-    )
+
+      </>
+  )
 }
 export default AllPokemon

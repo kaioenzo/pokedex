@@ -1,4 +1,4 @@
-let types_data = {
+const types_data = {
     "grass": {
         "attack": {
             "double": ["ground", "rock", "water"],
