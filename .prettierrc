@@ -1,4 +1,6 @@
-{"prettier/prettier": [
+{
+  "parser":"typescript",
+  "prettier/prettier": [
     "error",
     {
       "singleQuote": true,
