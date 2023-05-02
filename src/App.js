@@ -1,78 +1,74 @@
+import { useEffect, useState } from 'react';
 import './App.css';
-import api from './services/api';
-import { useState, useEffect } from 'react';
+import PokemonBasicInfo from './components/PokemonBasicInfo';
 import PokemonType from './components/PokemonType';
-import PokemonBasicInfo from './components/PokemonBasicInfo'
 import PokemonWeaknessStrength from './components/PokemonWeakness';
-import AllPokemon from './components/AllPokemon';
+import PokemonsList from './components/PokemonsList';
+import api from './services/api';
 
 function App() {
-  const [pokemon, setPokemon] = useState(undefined)
-  const [pokemonName, setPokemonName] = useState(undefined)
-  const pokemonTypes = []
+  const [pokemon, setPokemon] = useState(undefined);
+  const [pokemonName, setPokemonName] = useState('');
+  const pokemonTypes = [];
 
   useEffect(() => {
-    if(pokemonName!==undefined){
+    if (pokemonName.length >= 3) {
       api
-      .get(`pokemon/${pokemonName}`)
-      .then((response) => setPokemon(response.data))
-      .catch((err) => {
-        console.error("ops! ocorreu um erro: " + err);
-      })
+        .get(`pokemon/${pokemonName}`)
+        .then((response) => setPokemon(response.data))
+        .catch((err) => {
+          console.error('ops! ocorreu um erro: ' + err);
+        });
     }
-  }, [pokemonName])
-
+  }, [pokemonName]);
 
   const handleChangeInput = (e) => {
-    const pokemonInput = e.target.value
-    const pokemonStringLowerCase = pokemonInput.toLowerCase()
+    const pokemonInput = e.target.value.toLowerCase();
 
-    if(pokemonStringLowerCase.trim().length > 3){
-      setPokemonName(pokemonStringLowerCase);
+    if (pokemonInput.trim().length > 3) {
+      setPokemonName(pokemonInput);
+    } else {
+      setPokemonName('');
+      setPokemon(undefined);
     }
-    else{
-      setPokemonName(undefined)
-      setPokemon(undefined)
+  };
+
+  if (pokemon !== undefined) {
+    for (let i = 0; i < pokemon.types.length; i++) {
+      pokemonTypes.push(pokemon.types[i].type.name);
     }
   }
-
-  if (pokemon!==undefined) {
-      for (let i = 0; i < pokemon.types.length; i++) {
-       pokemonTypes.push(pokemon.types[i].type.name)
-
-      }
-}
-
-if (pokemon===undefined) {
-  return(
-        <div className='App'>
+  
+  if (pokemon === undefined) {
+    return (
+      <div className="App">
         <input
-        type="text"
-        name='search'
-        id='search'
-        onChange={handleChangeInput}
-        placeholder='Blastoise'
-        required
+          type="text"
+          name="search"
+          id="search"
+          onChange={handleChangeInput}
+          placeholder="Blastoise"
+          required
         />
-      <AllPokemon/>
-        </div>
-  )
-}
+        <PokemonsList />
+      </div>
+    );
+  }
+
   return (
     <div className="App">
-    <input
-    type="text"
-    name='search'
-    id='search'
-    onChange={handleChangeInput}
-    placeholder='Blastoise'
-    required
-/>
+      <input
+        type="text"
+        name="search"
+        id="search"
+        onChange={handleChangeInput}
+        placeholder="Blastoise"
+        required
+      />
 
-    <PokemonBasicInfo pokemonData={pokemon}/>
-    <PokemonType type={pokemonTypes}/>
-    <PokemonWeaknessStrength pokemonData={pokemon}/>
-
+      <PokemonBasicInfo pokemonData={pokemon} />
+      <PokemonType type={pokemonTypes} />
+      <PokemonWeaknessStrength pokemonData={pokemon} />
     </div>
   );
 }
