@@ -1,7 +1,6 @@
 import React from 'react';
 
 function PokemonBasicCard({ pokemon }) {
-  console.log(pokemon);
   return (
     <>
       {pokemon.map((item, index) => (

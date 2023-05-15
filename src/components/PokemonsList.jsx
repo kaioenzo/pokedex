@@ -44,6 +44,11 @@ const PokemonsList = memo(function PokemonsList() {
     setLimitList((prevCount) => prevCount + 20);
   }
 
+  function showBefore() {
+    setOffset((prevCount) => (prevCount - 20 >= 0 ? prevCount - 20 : prevCount));
+    setLimitList((prevCount) => prevCount + 20);
+  }
+
   function searchGen(genNumber) {
     switch (genNumber) {
       case 1:
@@ -58,13 +63,6 @@ const PokemonsList = memo(function PokemonsList() {
         break;
     }
   }
-
-  function showBefore() {
-    console.log(offset - 20);
-    setOffset((prevCount) => (prevCount - 20 >= 0 ? prevCount - 20 : prevCount));
-    setLimitList((prevCount) => prevCount + 20);
-  }
-  console.log(offset);
 
   useEffect(() => {
     handlePokemons();
