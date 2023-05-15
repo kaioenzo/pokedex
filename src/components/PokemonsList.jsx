@@ -1,37 +1,42 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Pokemon from '../models/Pokemon';
 import api from '../services/api';
-import TypeIcon from './TypeIcon';
+import TypeIcon from '../utils/TypeIcon';
 import './styles.module.css';
 import PokemonBasicCard from './PokemonBasicCard';
+import { memo } from 'react';
+import getBgColor from '../utils/getPokemonBgColor';
 
-function PokemonsList() {
+const PokemonsList = memo(function PokemonsList() {
   const [pokemonData, setPokemonData] = useState([]);
   const [limitList, setLimitList] = useState(20);
   const [offset, setOffset] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
 
+  const pokemonList = useMemo(() => {
+    return pokemonData
+      .map((pokemon) => ({
+        ...pokemon,
+        bgColor: getBgColor(pokemon.type1),
+        type1: TypeIcon(pokemon.type1),
+        typeList: [pokemon.type1, pokemon.type2],
+        type2: pokemon.type2 ? TypeIcon(pokemon.type2) : null
+      }))
+      .sort((a, b) => a.number - b.number);
+  }, [pokemonData]);
+
   const handlePokemons = useCallback(async () => {
     setIsLoading(true);
-    let pokemonList = (await api.get(`pokemon?limit=${limitList}&offset=${offset}`)).data.results;
+    const pokemonList = (await api.get(`pokemon?limit=${limitList}&offset=${offset}`)).data.results;
 
-    pokemonList = await Promise.all(
+    const fetchedPokemons = await Promise.all(
       pokemonList.map(async (pokemon) => {
-        let element = await (await api.get(`pokemon/${pokemon.name}`)).data;
-        element = new Pokemon(element);
-        element.type1 = TypeIcon(element.type1);
-        if (element.type2) {
-          element.type2 = TypeIcon(element.type2);
-        }
-        return element;
+        const fetchedPokemon = await api.get(`pokemon/${pokemon.name}`);
+        return new Pokemon(fetchedPokemon.data);
       })
     );
 
-    pokemonList.sort(function (a, b) {
-      return a.number - b.number;
-    });
-
-    setPokemonData(pokemonList);
+    setPokemonData(fetchedPokemons);
     setIsLoading(false);
   }, [limitList, offset]);
 
@@ -43,14 +48,23 @@ function PokemonsList() {
     switch (genNumber) {
       case 1:
         setOffset(0);
+        setLimitList(20);
         break;
       case 2:
         setOffset(151);
+        setLimitList(20);
         break;
       default:
         break;
     }
   }
+
+  function showBefore() {
+    console.log(offset - 20);
+    setOffset((prevCount) => (prevCount - 20 >= 0 ? prevCount - 20 : prevCount));
+    setLimitList((prevCount) => prevCount + 20);
+  }
+  console.log(offset);
 
   useEffect(() => {
     handlePokemons();
@@ -60,13 +74,14 @@ function PokemonsList() {
     <>
       <button onClick={() => searchGen(1)}>GEN I</button>
       <button onClick={() => searchGen(2)}>GEN II</button>
+      <button onClick={showBefore}>Show before</button>
       {isLoading && <h1>Carregando...</h1>}
       <div className="flex-row align-center">
-        <PokemonBasicCard pokemon={pokemonData} />
+        <PokemonBasicCard pokemon={pokemonList} />
       </div>
-
-      <button onClick={showMore}>Mostrar mais</button>
+      {!isLoading && <button onClick={showMore}>Mostrar mais</button>}
     </>
   );
-}
+});
+
 export default PokemonsList;

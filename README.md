@@ -1,5 +1,7 @@
 # K-Dex
 ## That's my personal pokedex project using React and PokeAPI
+ - No externals libs, only pure react and css.
+ - Best use of hooks and ESLINT rules as possible.
 
 ## How to run
 1. Clone this repository

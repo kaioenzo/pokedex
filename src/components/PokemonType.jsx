@@ -1,6 +1,5 @@
 function PokemonType({ type }) {
   const pokemonType = type.map((item, index) => <li key={index}>{item}</li>);
-  console.log(pokemonType);
 
   return (
     <div>

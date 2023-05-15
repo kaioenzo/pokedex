@@ -5,6 +5,8 @@ import PokemonType from './components/PokemonType';
 import PokemonWeaknessStrength from './components/PokemonWeakness';
 import PokemonsList from './components/PokemonsList';
 import api from './services/api';
+import AutoComplete from './components/autocomplete/AutoComplete';
+import { PokemonContext } from './context/PokemonContext';
 
 function App() {
   const [pokemon, setPokemon] = useState(undefined);
@@ -14,7 +16,7 @@ function App() {
   useEffect(() => {
     if (pokemonName.length >= 3) {
       api
-        .get(`pokemon/${pokemonName}`)
+        .get(`pokemon/${pokemonName.toLocaleLowerCase()}`)
         .then((response) => setPokemon(response.data))
         .catch((err) => {
           console.error('ops! ocorreu um erro: ' + err);
@@ -38,10 +40,28 @@ function App() {
       pokemonTypes.push(pokemon.types[i].type.name);
     }
   }
-  
+
   if (pokemon === undefined) {
     return (
-      <div className="App">
+      <div>
+        <PokemonContext.Provider value={{ pokemonName, setPokemonName }}>
+          <AutoComplete />
+          <PokemonsList />
+        </PokemonContext.Provider>
+      </div>
+    );
+  }
+
+  return (
+    <div className="App">
+      <PokemonContext.Provider value={{ pokemon, setPokemon }}>
+        <button
+          onClick={() => {
+            setPokemon(undefined);
+            setPokemonName('');
+          }}>
+          Volta
+        </button>
         <input
           type="text"
           name="search"
@@ -50,25 +70,10 @@ function App() {
           placeholder="Blastoise"
           required
         />
-        <PokemonsList />
-      </div>
-    );
-  }
-
-  return (
-    <div className="App">
-      <input
-        type="text"
-        name="search"
-        id="search"
-        onChange={handleChangeInput}
-        placeholder="Blastoise"
-        required
-      />
-
-      <PokemonBasicInfo pokemonData={pokemon} />
-      <PokemonType type={pokemonTypes} />
-      <PokemonWeaknessStrength pokemonData={pokemon} />
+        <PokemonBasicInfo pokemonData={pokemon} />
+        <PokemonType type={pokemonTypes} />
+        <PokemonWeaknessStrength pokemonData={pokemon} />
+      </PokemonContext.Provider>
     </div>
   );
 }
