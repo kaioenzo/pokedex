@@ -10,30 +10,21 @@ import { PokemonContext } from './context/PokemonContext';
 
 function App() {
   const [pokemon, setPokemon] = useState(undefined);
-  const [pokemonName, setPokemonName] = useState('');
+  const [pokemonName, setPokemonName] = useState(undefined);
   const pokemonTypes = [];
 
   useEffect(() => {
-    if (pokemonName.length >= 3) {
+    console.log(pokemonName);
+    if (pokemonName?.length >= 3) {
       api
         .get(`pokemon/${pokemonName.toLocaleLowerCase()}`)
         .then((response) => setPokemon(response.data))
         .catch((err) => {
           console.error('ops! ocorreu um erro: ' + err);
+          setPokemon(undefined);
         });
     }
   }, [pokemonName]);
-
-  const handleChangeInput = (e) => {
-    const pokemonInput = e.target.value.toLowerCase();
-
-    if (pokemonInput.trim().length > 3) {
-      setPokemonName(pokemonInput);
-    } else {
-      setPokemonName('');
-      setPokemon(undefined);
-    }
-  };
 
   if (pokemon !== undefined) {
     for (let i = 0; i < pokemon.types.length; i++) {
@@ -52,24 +43,27 @@ function App() {
     );
   }
 
+  const Header = () => {
+    return (
+      <div className="flex-row">
+        {pokemon !== undefined && (
+          <button
+            onClick={() => {
+              setPokemon(undefined);
+              setPokemonName('');
+            }}>
+            Voltar
+          </button>
+        )}
+        <AutoComplete />
+      </div>
+    );
+  };
+
   return (
     <div className="App">
-      <PokemonContext.Provider value={{ pokemon, setPokemon }}>
-        <button
-          onClick={() => {
-            setPokemon(undefined);
-            setPokemonName('');
-          }}>
-          Volta
-        </button>
-        <input
-          type="text"
-          name="search"
-          id="search"
-          onChange={handleChangeInput}
-          placeholder="Blastoise"
-          required
-        />
+      <PokemonContext.Provider value={{ pokemonName, setPokemonName }}>
+        <Header />
         <PokemonBasicInfo pokemonData={pokemon} />
         <PokemonType type={pokemonTypes} />
         <PokemonWeaknessStrength pokemonData={pokemon} />

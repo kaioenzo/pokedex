@@ -45,18 +45,12 @@ function AutoComplete() {
   const onKeyDown = (e) => {
     const { activeSuggestion, filteredSuggestions } = state;
 
-    // User pressed the enter key
-    if (e.keyCode === 13) {
-      setState({
-        ...state,
-        activeSuggestion: 0,
-        showSuggestions: false,
-        userInput: filteredSuggestions[activeSuggestion]
-      });
-      setPokemonName(filteredSuggestions[activeSuggestion]);
-    }
+    // scroll list to element target
+    const element = document.getElementById('suggestion-active');
+    element?.scrollIntoView(false);
+
     // User pressed the up arrow
-    else if (e.keyCode === 38) {
+    if (e.keyCode === 38) {
       if (activeSuggestion === 0) {
         return;
       }
@@ -78,26 +72,32 @@ function AutoComplete() {
 
   if (state.showSuggestions && state.userInput && state.filteredSuggestions.length) {
     return (
-      <>
+      <div>
         <input type="text" onChange={onChange} onKeyDown={onKeyDown} value={state.userInput} />
         <SuggestionList
+          id="suggestionList"
           filteredSuggestions={state.filteredSuggestions}
           onClick={onClick}
           activeSuggestion={state.activeSuggestion}
         />
-      </>
+      </div>
     );
   }
 
+  const search = (e) => {
+    setPokemonName(state.userInput);
+  };
   return (
-    <>
+    <div>
       <input type="text" onChange={onChange} onKeyDown={onKeyDown} value={state.userInput} />
-      {!state.filteredSuggestions && (
-        <div class="no-suggestions">
-          <em>No suggestions, you're on your own!</em>
-        </div>
-      )}
-    </>
+      <button onClick={search}>Buscar</button>
+      {(!state.filteredSuggestions && state.userInput) ||
+        (state.showSuggestions === true && state.userInput && (
+          <div class="no-suggestions">
+            <em>No suggestions!</em>
+          </div>
+        ))}
+    </div>
   );
 }
 
