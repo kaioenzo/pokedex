@@ -1,3 +1,8 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+}
+
 a {
   text-decoration: none;
   color: black;
@@ -24,6 +29,11 @@ a {
   align-items: center;
   justify-content: center;
 }
+
+.justify-between{
+  justify-content: space-between;
+}
+
 
 .pokemon-card {
   max-width: 550px;
@@ -62,7 +72,6 @@ a {
 }
 
 input {
-  border: 1px solid #999;
   padding: 0.5rem;
   width: 300px;
 }
@@ -73,14 +82,17 @@ input {
 }
 
 .suggestions {
+  background-color: #dfdfdf;
   border: 1px solid #999;
   border-top-width: 0;
+  margin-left: 16px;
   list-style: none;
   margin-top: 0;
   max-height: 143px;
-  overflow-y: auto;
+  overflow-y: scroll;
+  position:absolute;
   padding-left: 0;
-  width: calc(300px + 1rem);
+  width: calc(300px);
 }
 
 .suggestions li {
@@ -89,7 +101,7 @@ input {
 
 .suggestion-active,
 .suggestions li:hover {
-  background-color: #d4d4d4;
+  background-color: #f06b6b;
   color: #161616;
   cursor: pointer;
   font-weight: 700;
@@ -97,4 +109,48 @@ input {
 
 .suggestions li:not(:last-of-type) {
   border-bottom: 1px solid #999;
+}
+
+.search-button {
+  width: 80px;
+  height: 40px;
+  background-color: #fff;
+  cursor: pointer;
+  border: none;
+  border-radius: 16px;
+  background-color: #2194d6;
+  color: #fff;
+}
+
+.search-button:hover {
+  background-color: #0a6ca5;
+}
+
+.back-button {
+  width: 80px;
+  height: 40px;
+  color: #fff;
+  border-radius: 16px;
+  background-color: #474747;
+  cursor: pointer;
+  border: none;
+
+}
+
+.search-bar {
+  padding-top: 1.5rem;
+  padding-bottom: 1rem;
+  padding-right: 1rem;
+  padding-left: 1rem;
+  align-items: start;
+  background-color: #f84848;
+  width: 100%;
+}
+
+.search-bar > div >  input{
+  height: 40px;
+  padding: 0;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
+  border-radius: 8px;
 }

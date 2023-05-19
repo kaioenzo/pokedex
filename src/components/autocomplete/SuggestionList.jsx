@@ -19,6 +19,7 @@ function SuggestionList({ filteredSuggestions, onClick, activeSuggestion }) {
             </li>
           );
         })}
+        {filteredSuggestions.length === 0 && <p className="suggestion-active">No suggestions!</p>}
       </ul>
     </>
   );

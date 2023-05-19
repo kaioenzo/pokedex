@@ -1,18 +1,16 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
+import { PokemonContext } from '../../context/PokemonContext';
 import { pokemons } from '../../data/AllPokemonsName';
 import SuggestionList from './SuggestionList';
-import './styles.module.css';
-import { PokemonContext } from '../../context/PokemonContext';
 
-function AutoComplete() {
+export default function Autocomplete() {
   const [state, setState] = useState({
     activeSuggestion: 0,
     filteredSuggestions: [],
     showSuggestions: false,
     userInput: ''
   });
-
-  const { pokemonName, setPokemonName } = useContext(PokemonContext);
+  const { pokemon, setPokemon, setPokemonName } = useContext(PokemonContext);
 
   const onChange = (e) => {
     const userInput = e.currentTarget.value;
@@ -45,16 +43,14 @@ function AutoComplete() {
   const onKeyDown = (e) => {
     const { activeSuggestion, filteredSuggestions } = state;
 
-    // scroll list to element target
-    const element = document.getElementById('suggestion-active');
-    element?.scrollIntoView(false);
-
     // User pressed the up arrow
     if (e.keyCode === 38) {
       if (activeSuggestion === 0) {
         return;
       }
-
+      // scroll list to element target
+      const element = document.getElementById('suggestion-active');
+      element?.scrollIntoView(false);
       setState({ ...state, activeSuggestion: activeSuggestion - 1 });
     }
     // User pressed the down arrow
@@ -65,40 +61,39 @@ function AutoComplete() {
       ) {
         return;
       }
+      // scroll list to element target
+      const element = document.getElementById('suggestion-active');
+      element?.scrollIntoView(true);
 
       setState({ ...state, activeSuggestion: activeSuggestion + 1 });
     }
   };
-
-  if (state.showSuggestions && state.userInput && state.filteredSuggestions.length) {
-    return (
+  return (
+    <div className="flex-row">
+      {pokemon !== undefined && (
+        <button
+          className="back-button"
+          onClick={() => {
+            setPokemon(undefined);
+            setPokemonName('');
+          }}>
+          <span class="material-symbols-outlined">arrow_back</span>
+        </button>
+      )}
       <div>
         <input type="text" onChange={onChange} onKeyDown={onKeyDown} value={state.userInput} />
-        <SuggestionList
-          id="suggestionList"
-          filteredSuggestions={state.filteredSuggestions}
-          onClick={onClick}
-          activeSuggestion={state.activeSuggestion}
-        />
+        {state.showSuggestions && state.userInput && (
+          <SuggestionList
+            id="suggestionList"
+            filteredSuggestions={state.filteredSuggestions}
+            onClick={onClick}
+            activeSuggestion={state.activeSuggestion}
+          />
+        )}
       </div>
-    );
-  }
-
-  const search = (e) => {
-    setPokemonName(state.userInput);
-  };
-  return (
-    <div>
-      <input type="text" onChange={onChange} onKeyDown={onKeyDown} value={state.userInput} />
-      <button onClick={search}>Buscar</button>
-      {(!state.filteredSuggestions && state.userInput) ||
-        (state.showSuggestions === true && state.userInput && (
-          <div class="no-suggestions">
-            <em>No suggestions!</em>
-          </div>
-        ))}
+      <button className="search-button" onClick={() => setPokemonName(state.userInput)}>
+        <span className="material-symbols-outlined">search</span>
+      </button>
     </div>
   );
 }
-
-export default AutoComplete;

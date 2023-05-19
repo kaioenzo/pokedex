@@ -5,8 +5,8 @@ import PokemonType from './components/PokemonType';
 import PokemonWeaknessStrength from './components/PokemonWeakness';
 import PokemonsList from './components/PokemonsList';
 import api from './services/api';
-import AutoComplete from './components/autocomplete/AutoComplete';
 import { PokemonContext } from './context/PokemonContext';
+import Header from './components/header/Header';
 
 function App() {
   const [pokemon, setPokemon] = useState(undefined);
@@ -35,34 +35,17 @@ function App() {
   if (pokemon === undefined) {
     return (
       <div>
-        <PokemonContext.Provider value={{ pokemonName, setPokemonName }}>
-          <AutoComplete />
+        <PokemonContext.Provider value={{ pokemonName, pokemon, setPokemonName, setPokemon }}>
+          <Header />
           <PokemonsList />
         </PokemonContext.Provider>
       </div>
     );
   }
 
-  const Header = () => {
-    return (
-      <div className="flex-row">
-        {pokemon !== undefined && (
-          <button
-            onClick={() => {
-              setPokemon(undefined);
-              setPokemonName('');
-            }}>
-            Voltar
-          </button>
-        )}
-        <AutoComplete />
-      </div>
-    );
-  };
-
   return (
-    <div className="App">
-      <PokemonContext.Provider value={{ pokemonName, setPokemonName }}>
+    <div className="">
+      <PokemonContext.Provider value={{ pokemonName, pokemon, setPokemonName, setPokemon }}>
         <Header />
         <PokemonBasicInfo pokemonData={pokemon} />
         <PokemonType type={pokemonTypes} />
